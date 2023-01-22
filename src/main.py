@@ -2,6 +2,7 @@ from model import make_model
 from imports import *
 from utilities import *
 
+
 def inference_test():
     test_model = make_model(11, 11, 2)
     test_model.eval()
@@ -29,7 +30,9 @@ def run_tests():
     for _ in range(10):
         inference_test()
 
+
 RUN_EXAMPLES = True
+
 
 def show_example(fn, args=[]):
     if __name__ == "__main__" and RUN_EXAMPLES:

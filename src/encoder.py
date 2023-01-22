@@ -1,6 +1,7 @@
 from imports import *
 from layers import clones, LayerNorm, SublayerConnection
 
+
 class Encoder(nn.Module):
     "Core encoder is a stack of N layers"
 

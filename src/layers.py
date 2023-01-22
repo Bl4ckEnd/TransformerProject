@@ -1,5 +1,6 @@
 from imports import *
 
+
 class LayerNorm(nn.Module):
     "Construct a layernorm module (See citation for details)."
 
@@ -34,4 +35,3 @@ class SublayerConnection(nn.Module):
 def clones(module, N):
     "Produce N identical layers."
     return nn.ModuleList([copy.deepcopy(module) for _ in range(N)])
-
