@@ -4,7 +4,7 @@ from utilities import *
 
 
 def inference_test():
-    test_model = make_model(11, 11, 2)
+    test_model = make_model(11, 11, N=2, d_model=32, d_ff=64)
     test_model.eval()
     src = torch.LongTensor([[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]])
     src_mask = torch.ones(1, 1, 10)
