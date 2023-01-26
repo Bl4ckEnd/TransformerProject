@@ -12,6 +12,6 @@ def inference_test():
 
     print("Output: ", ys)
 
+
 if __name__ == "__main__":
     inference_test()
-

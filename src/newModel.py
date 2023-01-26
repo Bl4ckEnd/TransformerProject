@@ -32,7 +32,7 @@ class AttentionClassifier(nn.Module):
 
     def __init__(self, encoder, head, src_embed):
         super(AttentionClassifier, self).__init__()
-        self.encoder = encoder 
+        self.encoder = encoder
         self.src_embed = src_embed
         self.head = head
 

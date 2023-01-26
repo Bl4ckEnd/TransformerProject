@@ -13,6 +13,7 @@ def yield_tokens(data_iter, tokenizer, index):
     for from_to_tuple in data_iter:
         yield tokenizer(from_to_tuple[index])
 
+
 def build_vocabulary(tokenizer):
     def tokenize_en(text):
         return tokenize(text, tokenizer)
