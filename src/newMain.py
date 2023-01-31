@@ -9,6 +9,7 @@ def inference_test():
     src = torch.LongTensor([[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]])
 
     ys = test_model(src)
+    print(src.shape)
 
     print("Output: ", ys)
 
