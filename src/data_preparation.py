@@ -1,27 +1,18 @@
-# Import libraries
-
-import pandas as pd
 import numpy as np
-
 import nltk
 from nltk.corpus import stopwords
+import torch
+from torch.utils.data import TensorDataset, DataLoader
+from tqdm import tqdm
+from collections import Counter
 
 nltk.download("stopwords")
 nltk.download("wordnet")
 stopwords = set(stopwords.words("english"))
 
-
-import torch
-from torch.utils.data import TensorDataset, DataLoader
-
-from tqdm import tqdm
-
 tqdm.pandas()
-from collections import Counter
 
-data = pd.read_csv("../online_dataset/imdb_processed.csv")
 
-# padding sequences
 def pad_features(reviews, pad_id, seq_length=128):
     # features = np.zeros((len(reviews), seq_length), dtype=int)
     features = np.full((len(reviews), seq_length), pad_id, dtype=int)
@@ -33,7 +24,7 @@ def pad_features(reviews, pad_id, seq_length=128):
     return features
 
 
-def dataprocessing(data):
+def data_processing(data):
     # get all processed reviews
     reviews = data.processed.values
     # merge into single variable, separated by whitespaces
@@ -63,7 +54,6 @@ def dataprocessing(data):
 
     # get labels as numpy
     labels = data.label.to_numpy()
-    labels
 
     # train test split
     train_size = 0.7  # we will use 80% of whole data as train set

@@ -54,13 +54,11 @@ class ClassificationHead(nn.Module):
     def __init__(self):
         super(ClassificationHead, self).__init__()
         self.flatten = nn.Flatten()
-        self.linear = nn.Linear(16384, 1) # TODO: 16384 = seq_length * embedding_size
-        self.sigmoid = nn.Sigmoid()
+        self.linear = nn.Linear(16384, 1)  # TODO: 16384 = seq_length * embedding_size
+        self.softmax = nn.Softmax()
 
     def forward(self, x):
         x = self.flatten(x)
         x = self.linear(x)
-        x = self.sigmoid(x)
-        x = torch.heaviside(x-0.5, torch.ones(1))
-        x = torch.squeeze(x)
-        return x
+        x = self.softmax(x)
+        return torch.squeeze(x)
