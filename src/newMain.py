@@ -1,6 +1,6 @@
-from newModel import make_model
-from imports import *
-from utilities import *
+from src.newModel import make_model
+from src.imports import *
+from src.utilities import *
 
 
 def inference_test():

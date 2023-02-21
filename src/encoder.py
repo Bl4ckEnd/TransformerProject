@@ -1,5 +1,5 @@
-from imports import *
-from layers import clones, LayerNorm, SublayerConnection
+from src.imports import *
+from src.layers import clones, LayerNorm, SublayerConnection
 
 
 class Encoder(nn.Module):

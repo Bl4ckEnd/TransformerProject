@@ -1,7 +1,7 @@
-from imports import *
-from utilities import *
-from attention import attention, MultiHeadedAttention
-from newEncoder import Encoder, EncoderLayer
+from src.imports import *
+from src.utilities import *
+from src.attention import attention, MultiHeadedAttention
+from src.newEncoder import Encoder, EncoderLayer
 
 
 def make_model(src_vocab, N=6, d_model=512, d_ff=2048, h=8, dropout=0.1):
@@ -50,7 +50,7 @@ class ClassificationHead(nn.Module):
     def __init__(self, d_model, n_labels):
         super(ClassificationHead, self).__init__()
         self.flatten = nn.Flatten()
-        self.linear = nn.Linear(d_model * 10, n_labels)
+        self.linear = nn.LazyLinear(n_labels)
         self.softmax = nn.Softmax(dim=1)
 
     def forward(self, x):
