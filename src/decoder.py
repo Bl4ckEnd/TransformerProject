@@ -1,5 +1,5 @@
-from imports import *
-from layers import *
+from src.imports import *
+from src.layers import *
 
 
 class Decoder(nn.Module):

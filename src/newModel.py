@@ -1,7 +1,7 @@
-from imports import *
-from utilities import *
-from attention import attention, MultiHeadedAttention
-from newEncoder import Encoder, EncoderLayer
+from src.imports import *
+from src.utilities import *
+from src.attention import attention, MultiHeadedAttention
+from src.newEncoder import Encoder, EncoderLayer
 
 
 def make_model(src_vocab, N=6, d_model=512, d_ff=2048, h=8, dropout=0.1):
