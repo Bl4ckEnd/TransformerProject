@@ -1,4 +1,6 @@
 from utilities import PositionalEncoding, PositionwiseFeedForward, Embeddings
+import torch.nn as nn
+import copy
 from attention import attention, MultiHeadedAttention
 from encoder import Encoder, EncoderLayer
 

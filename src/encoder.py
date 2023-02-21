@@ -1,6 +1,5 @@
-from src.imports import *
-from src.layers import clones, LayerNorm, SublayerConnection
-
+from layers import clones, LayerNorm, SublayerConnection
+from torch import nn
 
 class Encoder(nn.Module):
     "Core encoder is a stack of N layers"
