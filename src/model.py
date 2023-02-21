@@ -1,21 +1,18 @@
-from utilities import *
+from utilities import PositionalEncoding, PositionwiseFeedForward, Embeddings
 from attention import attention, MultiHeadedAttention
 from encoder import Encoder, EncoderLayer
-from decoder import Decoder, DecoderLayer
 
 
-def make_model(src_vocab, tgt_vocab, N=6, d_model=512, d_ff=2048, h=8, dropout=0.1):
+def make_model(src_vocab, N=6, d_model=512, d_ff=2048, h=8, dropout=0.1):
     "Helper: Construct a model from hyperparameters."
     c = copy.deepcopy
     attn = MultiHeadedAttention(h, d_model)
     ff = PositionwiseFeedForward(d_model, d_ff, dropout)
     position = PositionalEncoding(d_model, dropout)
-    model = EncoderDecoder(
+    model = AttentionClassifier(
         Encoder(EncoderLayer(d_model, c(attn), c(ff), dropout), N),
-        Decoder(DecoderLayer(d_model, c(attn), c(attn), c(ff), dropout), N),
+        ClassificationHead(2),
         nn.Sequential(Embeddings(d_model, src_vocab), c(position)),
-        nn.Sequential(Embeddings(d_model, tgt_vocab), c(position)),
-        Generator(d_model, tgt_vocab),
     )
 
     # This was important from their code.
@@ -26,37 +23,38 @@ def make_model(src_vocab, tgt_vocab, N=6, d_model=512, d_ff=2048, h=8, dropout=0
     return model
 
 
-class EncoderDecoder(nn.Module):
+class AttentionClassifier(nn.Module):
     """
-    A standard Encoder-Decoder architecture. Base for this and many
-    other models.
+    Encoder-Classifier architecture. This model is a transformer-attention
+    model adapted to a binary classification task.
     """
 
-    def __init__(self, encoder, decoder, src_embed, tgt_embed, generator):
-        super(EncoderDecoder, self).__init__()
+    def __init__(self, encoder, head, src_embed):
+        super(AttentionClassifier, self).__init__()
         self.encoder = encoder
-        self.decoder = decoder
         self.src_embed = src_embed
-        self.tgt_embed = tgt_embed
-        self.generator = generator
+        self.head = head
 
-    def forward(self, src, tgt, src_mask, tgt_mask):
+    def forward(self, src):
         "Take in and process masked src and target sequences."
-        return self.decode(self.encode(src, src_mask), src_mask, tgt, tgt_mask)
-
-    def encode(self, src, src_mask):
-        return self.encoder(self.src_embed(src), src_mask)
-
-    def decode(self, memory, src_mask, tgt, tgt_mask):
-        return self.decoder(self.tgt_embed(tgt), memory, src_mask, tgt_mask)
+        x = self.encoder(self.src_embed(src))
+        return self.head(x).item()
 
 
-class Generator(nn.Module):
-    "Define standard linear + softmax generation step."
+class ClassificationHead(nn.Module):
+    """
+    Classification head.
+    """
 
-    def __init__(self, d_model, vocab):
-        super(Generator, self).__init__()
-        self.proj = nn.Linear(d_model, vocab)
+    def __init__(self, n_labels):
+        super(ClassificationHead, self).__init__()
+        self.flatten = nn.Flatten()
+        self.linear = nn.LazyLinear(n_labels)
+        self.softmax = nn.Softmax(dim=1)
 
     def forward(self, x):
-        return log_softmax(self.proj(x), dim=-1)
+        x = self.flatten(x)
+        x = self.linear(x)
+        x = self.softmax(x)
+        # return class with highest probability
+        return x.argmax(dim=1)

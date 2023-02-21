@@ -1,4 +1,6 @@
-from src.imports import *
+import torch
+import torch.nn as nn
+import copy
 
 
 class LayerNorm(nn.Module):

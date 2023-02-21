@@ -10,10 +10,10 @@ class Encoder(nn.Module):
         self.layers = clones(layer, N)
         self.norm = LayerNorm(layer.size)
 
-    def forward(self, x, mask):
-        "Pass the input (and mask) through each layer in turn."
+    def forward(self, x):
+        "Pass the input through each layer in turn."
         for layer in self.layers:
-            x = layer(x, mask)
+            x = layer(x)
         return self.norm(x)
 
 
@@ -27,7 +27,7 @@ class EncoderLayer(nn.Module):
         self.sublayer = clones(SublayerConnection(size, dropout), 2)
         self.size = size
 
-    def forward(self, x, mask):
+    def forward(self, x):
         "Follow Figure 1 (left) for connections."
-        x = self.sublayer[0](x, lambda x: self.self_attn(x, x, x, mask))
+        x = self.sublayer[0](x, lambda x: self.self_attn(x, x, x))
         return self.sublayer[1](x, self.feed_forward)

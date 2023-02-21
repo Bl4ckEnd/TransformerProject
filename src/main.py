@@ -1,43 +1,18 @@
-from model import make_model
-from imports import *
-from utilities import *
+from src.newModel import make_model
+from src.imports import *
+from src.utilities import *
 
 
 def inference_test():
-    test_model = make_model(11, 11, N=2, d_model=32, d_ff=64)
+    test_model = make_model(11, N=2, d_model=32, d_ff=64)
     test_model.eval()
     src = torch.LongTensor([[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]])
-    src_mask = torch.ones(1, 1, 10)
 
-    memory = test_model.encode(src, src_mask)
-    ys = torch.zeros(1, 1).type_as(src)
+    ys = test_model(src)
+    print(src.shape)
 
-    for i in range(9):
-        out = test_model.decode(
-            memory, src_mask, ys, subsequent_mask(ys.size(1)).type_as(src.data)
-        )
-        prob = test_model.generator(out[:, -1])
-        _, next_word = torch.max(prob, dim=1)
-        next_word = next_word.data[0]
-        ys = torch.cat(
-            [ys, torch.empty(1, 1).type_as(src.data).fill_(next_word)], dim=1
-        )
-
-    print("Example Untrained Model Prediction:", ys)
-
-
-def run_tests():
-    for _ in range(10):
-        inference_test()
-
-
-RUN_EXAMPLES = True
-
-
-def show_example(fn, args=[]):
-    if __name__ == "__main__" and RUN_EXAMPLES:
-        return fn(*args)
+    print("Output: ", ys)
 
 
 if __name__ == "__main__":
-    show_example(run_tests)
+    inference_test()
