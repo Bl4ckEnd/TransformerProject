@@ -3,32 +3,21 @@
 import pandas as pd
 import numpy as np
 
-import matplotlib.pyplot as plt
-import seaborn as sns
-
-import re
 import nltk
-from nltk.tokenize import word_tokenize, sent_tokenize
 from nltk.corpus import stopwords
-from nltk.stem.wordnet import WordNetLemmatizer
 nltk.download('stopwords')
 nltk.download('wordnet')
 stopwords = set(stopwords.words('english'))
 
 
 import torch
-from torch import nn
-from torch.optim import Adam
 from torch.utils.data import TensorDataset, DataLoader
 
-from sklearn.metrics import classification_report, confusion_matrix
-
-import os
 from tqdm import tqdm
 tqdm.pandas()
 from collections import Counter
 
-data = pd.read_csv('/Users/laurafuentesvicente/M1 Maths&IA/S2/Methodes de l\'IA 2/TransformerProject/online_dataset/imdb_processed.csv')
+data = pd.read_csv('../online_dataset/imdb_processed.csv')
 
     # padding sequences
 def pad_features(reviews, pad_id, seq_length=128):
