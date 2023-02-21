@@ -12,7 +12,7 @@ def make_model(src_vocab, N=6, d_model=512, d_ff=2048, h=8, dropout=0.1):
     position = PositionalEncoding(d_model, dropout)
     model = AttentionClassifier(
         Encoder(EncoderLayer(d_model, c(attn), c(ff), dropout), N),
-        ClassificationHead(d_model, 2),
+        ClassificationHead(2),
         nn.Sequential(Embeddings(d_model, src_vocab), c(position)),
     )
 
@@ -47,10 +47,10 @@ class ClassificationHead(nn.Module):
     Classification head.
     """
 
-    def __init__(self, d_model, n_labels):
+    def __init__(self, n_labels):
         super(ClassificationHead, self).__init__()
         self.flatten = nn.Flatten()
-        self.linear = nn.Linear(d_model * 10, n_labels)
+        self.linear = nn.LazyLinear(n_labels)
         self.softmax = nn.Softmax(dim=1)
 
     def forward(self, x):
