@@ -1,3 +1,5 @@
+import torch
+
 from utilities import PositionalEncoding, PositionwiseFeedForward, Embeddings
 import torch.nn as nn
 import copy
@@ -13,7 +15,7 @@ def make_model(src_vocab, N=6, d_model=512, d_ff=2048, h=8, dropout=0.1):
     position = PositionalEncoding(d_model, dropout)
     model = AttentionClassifier(
         Encoder(EncoderLayer(d_model, c(attn), c(ff), dropout), N),
-        ClassificationHead(2),
+        ClassificationHead(),
         nn.Sequential(Embeddings(d_model, src_vocab), c(position)),
     )
 
@@ -40,7 +42,8 @@ class AttentionClassifier(nn.Module):
     def forward(self, src):
         "Take in and process masked src and target sequences."
         x = self.encoder(self.src_embed(src))
-        return self.head(x).item()
+        x = self.head(x)
+        return x
 
 
 class ClassificationHead(nn.Module):
@@ -48,15 +51,16 @@ class ClassificationHead(nn.Module):
     Classification head.
     """
 
-    def __init__(self, n_labels):
+    def __init__(self):
         super(ClassificationHead, self).__init__()
         self.flatten = nn.Flatten()
-        self.linear = nn.LazyLinear(n_labels)
-        self.softmax = nn.Softmax(dim=1)
+        self.linear = nn.Linear(16384, 1) # TODO: 16384 = seq_length * embedding_size
+        self.sigmoid = nn.Sigmoid()
 
     def forward(self, x):
         x = self.flatten(x)
         x = self.linear(x)
-        x = self.softmax(x)
-        # return class with highest probability
-        return x.argmax(dim=1)
+        x = self.sigmoid(x)
+        x = torch.heaviside(x-0.5, torch.ones(1))
+        x = torch.squeeze(x)
+        return x
