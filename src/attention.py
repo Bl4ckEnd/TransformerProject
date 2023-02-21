@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import math
-from layers import SublayerConnection, LayerNorm, clones
+from layers import clones
 
 
 class MultiHeadedAttention(nn.Module):

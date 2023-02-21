@@ -3,7 +3,7 @@ import torch
 from utilities import PositionalEncoding, PositionwiseFeedForward, Embeddings
 import torch.nn as nn
 import copy
-from attention import attention, MultiHeadedAttention
+from attention import MultiHeadedAttention
 from encoder import Encoder, EncoderLayer
 
 
@@ -54,7 +54,9 @@ class ClassificationHead(nn.Module):
     def __init__(self):
         super(ClassificationHead, self).__init__()
         self.flatten = nn.Flatten()
-        self.linear = nn.Linear(16384, 1)  # TODO: 16384 = seq_length * embedding_size
+
+        # TODO: 16384 = seq_length * embedding_size
+        self.linear = nn.Linear(16384, 1)
         self.softmax = nn.Softmax()
 
     def forward(self, x):
