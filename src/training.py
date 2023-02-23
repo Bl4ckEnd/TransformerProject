@@ -5,25 +5,45 @@ from data_preparation import data_processing
 from torch import optim
 from torch import nn
 from tqdm import tqdm
+import yaml
+from datetime import datetime as dt
 
+with open("params.yaml") as f:
+    config = yaml.load(f, Loader=yaml.FullLoader)
 
-data_path = "../online_dataset/imdb_processed.csv"
+data_path = config["paths"]["data"]
 data = pd.read_csv(data_path)
 
-# only use 20% of data
-data = data.sample(frac=0.2, random_state=42)
-train_loader, val_loader, test_loader, vocab_len = data_processing(data)
+# SET HYPER-PARAMETERS
+batch_size = config["model"]["batch_size"]
+seq_length = config["model"]["seq_length"]
+N = config["model"]["N"]
+d_model = config["model"]["d_model"]
+d_ff = config["model"]["d_ff"]
+h = config["model"]["h"]
+amount_of_data = config["training"]["amount_of_data"]
 
-model = make_model(vocab_len, N=6, d_model=128, d_ff=256, h=8, seq_length=128)
+data = data.sample(frac=amount_of_data, random_state=42)
+train_loader, val_loader, test_loader, vocab_len = data_processing(
+    data, batch_size=batch_size, seq_length=seq_length
+)
 
+model = make_model(
+    vocab_len, N=N, d_model=d_model, d_ff=d_ff, h=h, seq_length=seq_length
+)
+
+# Training
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters(), lr=0.001)
-epochs = 5
+learning_rate = config["training"]["learning_rate"]
+optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+epochs = config["training"]["epochs"]
+
+# set to training mode
+model.train()
 
 for e in tqdm(range(epochs)):
     running_loss = 0
     for x, y in tqdm(train_loader):
-        y = y.float()
         optimizer.zero_grad()
         y_pred = model(x)
         loss = criterion(y_pred, y)
@@ -33,5 +53,7 @@ for e in tqdm(range(epochs)):
     else:
         print(f"Training loss: {running_loss / len(train_loader)}")
 
-SAVE_PATH = "../saved_model_parameters/model.pth"
-torch.save(model.state_dict(), SAVE_PATH)
+# Save model
+time = dt.now().strftime("%Y-%m-%d_%H-%M-%S")
+SAVE_PATH = config["paths"]["weights"]
+torch.save(model, SAVE_PATH + time + ".pth")

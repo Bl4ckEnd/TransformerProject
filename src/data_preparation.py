@@ -24,7 +24,7 @@ def pad_features(reviews, pad_id, seq_length=128):
     return features
 
 
-def data_processing(data):
+def data_processing(data, batch_size=128, seq_length=256):
     # get all processed reviews
     reviews = data.processed.values
     # merge into single variable, separated by whitespaces
@@ -44,7 +44,6 @@ def data_processing(data):
         [word2int[word] for word in review.split()] for review in tqdm(reviews)
     ]
 
-    seq_length = 256
     features = pad_features(
         reviews_enc, pad_id=word2int["<PAD>"], seq_length=seq_length
     )
@@ -75,9 +74,6 @@ def data_processing(data):
     print("Train set: {}".format(train_x.shape))
     print("Validation set: {}".format(val_x.shape))
     print("Test set: {}".format(test_x.shape))
-
-    # define batch size
-    batch_size = 128
 
     # create tensor datasets
     train_set = TensorDataset(torch.from_numpy(train_x), torch.from_numpy(train_y))

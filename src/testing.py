@@ -1,22 +1,34 @@
-from model import make_model
 import torch
+import torch.nn as nn
 import pandas as pd
 from data_preparation import data_processing
 from tqdm import tqdm
+import yaml
 
 
-data_path = "../online_dataset/imdb_processed.csv"
+with open("params.yaml") as f:
+    config = yaml.load(f, Loader=yaml.FullLoader)
+
+
+data_path = config["paths"]["data"]
 data = pd.read_csv(data_path)
 
-# only use 20% of data
-data = data.sample(frac=0.2, random_state=42)
-train_loader, val_loader, test_loader, vocab_len = data_processing(data)
+# SET HYPER-PARAMETERS
+batch_size = config["model"]["batch_size"]
+seq_length = config["model"]["seq_length"]
+amount_of_data = config["training"]["amount_of_data"]
 
-# load model from saved parameters
-model = make_model(vocab_len, N=2, d_model=64, d_ff=128, h=2)
-model.load_state_dict(torch.load("../saved_model_parameters/model.pth"))
+data = data.sample(frac=amount_of_data, random_state=42)
+_, val_loader, test_loader, _ = data_processing(
+    data, batch_size=batch_size, seq_length=seq_length
+)
 
+# Load model
+PATH = "../saved_models/2023-02-23_17-29-54.pth"
+
+model = torch.load(PATH)
 # create test loop
+model.eval()
 
 correct = 0
 total = 0
@@ -24,12 +36,13 @@ total = 0
 with torch.no_grad():
     for x, y in tqdm(test_loader):
         y_pred = model(x)
+        y_pred = nn.Softmax(dim=1)(y_pred)
+        y_pred = torch.max(y_pred, dim=1)
+        y_pred = y_pred.indices
 
-        # set y_pred to 1 if y_pred > 0.5
-        predicted = torch.where(
-            y_pred > 0.5, torch.ones_like(y_pred), torch.zeros_like(y_pred)
-        )
         total += y.size(0)
-        correct += (predicted == y).sum().item()
+        correct += torch.where(y_pred == y, 1, 0).sum().item()
 
-print(f"Accuracy of the network on {len(test_loader)}: {100 * correct // total} %")
+
+accuracy = round(100 * correct / total, 3)
+print(f"Accuracy of the network on test set: {accuracy} %")

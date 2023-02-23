@@ -1,5 +1,3 @@
-import torch
-
 from utilities import PositionalEncoding, PositionwiseFeedForward, Embeddings
 import torch.nn as nn
 import copy
@@ -56,13 +54,11 @@ class ClassificationHead(nn.Module):
     def __init__(self, d_model, seq_length):
         super(ClassificationHead, self).__init__()
         self.flatten = nn.Flatten()
-
-        # TODO: 16384 = seq_length * embedding_size
-        self.linear = nn.Linear(2 * d_model * seq_length, 1)
-        self.softmax = nn.Softmax(dim=1)
+        self.linear1 = nn.Linear(d_model * seq_length, 128)
+        self.linear2 = nn.Linear(128, 2)
 
     def forward(self, x):
         x = self.flatten(x)
-        x = self.linear(x)
-        x = self.softmax(x)
-        return torch.squeeze(x)
+        x = self.linear1(x).relu()
+        x = self.linear2(x)
+        return x

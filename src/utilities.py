@@ -20,7 +20,10 @@ class PositionwiseFeedForward(nn.Module):
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, x):
-        return self.w_2(self.dropout(self.w_1(x).relu()))
+        x = self.w_1(x).relu()
+        x = self.dropout(x)
+        x = self.w_2(x)
+        return x
 
 
 class Embeddings(nn.Module):
@@ -30,7 +33,9 @@ class Embeddings(nn.Module):
         self.d_model = d_model
 
     def forward(self, x):
-        return self.lut(x) * math.sqrt(self.d_model)
+        x = self.lut(x)
+        x *= math.sqrt(self.d_model)
+        return x
 
 
 class PositionalEncoding(nn.Module):
