@@ -5,45 +5,59 @@ from data_preparation import data_processing
 from torch import optim
 from torch import nn
 from tqdm import tqdm
-import yaml
 from datetime import datetime as dt
+from utilities import set_device
+from utilities import load_params
 
-with open("params.yaml") as f:
-    config = yaml.load(f, Loader=yaml.FullLoader)
+# Load params
+(
+    data_path,
+    batch_size,
+    seq_length,
+    N,
+    d_model,
+    d_ff,
+    h,
+    amount_of_data,
+    learning_rate,
+    epochs,
+    SAVE_PATH,
+    device_name,
+) = load_params()
 
-data_path = config["paths"]["data"]
+# set device
+device = set_device(device_name)
+
+# Load data
 data = pd.read_csv(data_path)
-
-# SET HYPER-PARAMETERS
-batch_size = config["model"]["batch_size"]
-seq_length = config["model"]["seq_length"]
-N = config["model"]["N"]
-d_model = config["model"]["d_model"]
-d_ff = config["model"]["d_ff"]
-h = config["model"]["h"]
-amount_of_data = config["training"]["amount_of_data"]
-
 data = data.sample(frac=amount_of_data, random_state=42)
-train_loader, val_loader, test_loader, vocab_len = data_processing(
-    data, batch_size=batch_size, seq_length=seq_length
+train_loader, test_loader, vocab_len = data_processing(
+    data, batch_size=batch_size, seq_length=seq_length, test_size=0.2
 )
 
+# Create model
 model = make_model(
     vocab_len, N=N, d_model=d_model, d_ff=d_ff, h=h, seq_length=seq_length
 )
 
-# Training
+# move model to device
+model = model.to(device)
+
+# Set loss and optimizer
 criterion = nn.CrossEntropyLoss()
-learning_rate = config["training"]["learning_rate"]
 optimizer = optim.Adam(model.parameters(), lr=learning_rate)
-epochs = config["training"]["epochs"]
+
 
 # set to training mode
 model.train()
 
+# Train model
 for e in tqdm(range(epochs)):
     running_loss = 0
     for x, y in tqdm(train_loader):
+        # move data to device
+        x = x.to(device)
+        y = y.to(device)
         optimizer.zero_grad()
         y_pred = model(x)
         loss = criterion(y_pred, y)
@@ -55,5 +69,4 @@ for e in tqdm(range(epochs)):
 
 # Save model
 time = dt.now().strftime("%Y-%m-%d_%H-%M-%S")
-SAVE_PATH = config["paths"]["weights"]
 torch.save(model, SAVE_PATH + time + ".pth")

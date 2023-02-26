@@ -1,13 +1,14 @@
 # GENERAL PARAMETERS
 model:
-  batch_size: 64
-  seq_length: 128
+  batch_size: 128
+  seq_length: 256
   N: 2
-  d_model: 64
-  d_ff: 128
-  h: 2
+  d_model: 512
+  d_ff: 1024
+  h: 4
 
 training:
+  device: "mps" # "cpu" or "gpu" or "mps"
   amount_of_data: 1
   epochs: 5
   learning_rate: 0.001
