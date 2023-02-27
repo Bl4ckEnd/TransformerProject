@@ -1,19 +1,15 @@
-# GENERAL PARAMETERS
 model:
-  batch_size: 128
-  seq_length: 256
   N: 2
-  d_model: 512
-  d_ff: 1024
-  h: 4
-
-training:
-  device: "mps" # "cpu" or "gpu" or "mps"
-  amount_of_data: 1
-  epochs: 5
-  learning_rate: 0.001
-
+  batch_size: 128
+  d_ff: 256
+  d_model: 128
+  h: 2
+  seq_length: 256
 paths:
-  data: "../online_dataset/imdb_processed.csv"
-  weights: "../saved_models/"
-
+  data: ../online_dataset/imdb_processed.csv
+  weights: ../saved_models/
+training:
+  amount_of_data: 0.2
+  device: mps
+  epochs: 7
+  learning_rate: 0.001
