@@ -53,6 +53,7 @@ def train():
     # set to training mode
     model.train()
 
+    progress = st.progress(0)
     # Train model
     for e in tqdm(range(epochs)):
         st.write(f"Epoch: {e+1}")
@@ -70,6 +71,7 @@ def train():
             running_loss += loss.item()
         else:
             print(f"Training loss: {running_loss / len(train_loader)}")
+            st.write(f"Training loss: {running_loss / len(train_loader)}")
 
     return model
 

@@ -4,6 +4,7 @@ import pandas as pd
 from data_preparation import data_processing
 from tqdm import tqdm
 from utilities import set_device, load_params
+import streamlit as st
 
 
 def test(model):
@@ -54,6 +55,7 @@ def test(model):
 
     accuracy = round(100 * correct / total, 3)
     print(f"Accuracy of the network on test set: {accuracy} %")
+    st.write(f"Accuracy of the network on test set: {accuracy} %")
 
 
 if __name__ == "__main__":
