@@ -6,7 +6,7 @@ from tqdm import tqdm
 from utilities import set_device, load_params
 
 
-def test():
+def test(model):
     # Load params
     (
         data_path,
@@ -32,10 +32,6 @@ def test():
         data, batch_size=batch_size, seq_length=seq_length, test_size=0.2
     )
 
-    # Load model
-    PATH = "../saved_models/2023-02-27_11-01-00.pth"
-
-    model = torch.load(PATH, map_location=device)
     # create test loop
     model.eval()
 
@@ -61,4 +57,8 @@ def test():
 
 
 if __name__ == "__main__":
-    test()
+    # Load model
+    PATH = "../saved_models/2023-02-27_11-01-00.pth"
+    device = set_device("mps")
+    model = torch.load(PATH, map_location=device)
+    test(model)

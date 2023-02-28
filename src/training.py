@@ -55,7 +55,8 @@ def train():
 
     # Train model
     for e in tqdm(range(epochs)):
-        st.progress(e / epochs)
+        st.write(f"Epoch: {e+1}")
+        progress.progress(e / epochs)
         running_loss = 0
         for x, y in tqdm(train_loader):
             # move data to device
@@ -70,10 +71,12 @@ def train():
         else:
             print(f"Training loss: {running_loss / len(train_loader)}")
 
-    # Save model
-    time = dt.now().strftime("%Y-%m-%d_%H-%M-%S")
-    torch.save(model, SAVE_PATH + time + ".pth")
+    return model
 
 
 if __name__ == "__main__":
-    train()
+    model = train()
+
+    # Save model
+    time = dt.now().strftime("%Y-%m-%d_%H-%M-%S")
+    torch.save(model, "../saved_models/" + time + ".pth")
