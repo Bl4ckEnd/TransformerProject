@@ -24,7 +24,7 @@ def pad_features(reviews, pad_id, seq_length=128):
     return features
 
 
-def data_processing(data):
+def data_processing(data, batch_size=128, seq_length=256, test_size=0.2):
     # get all processed reviews
     reviews = data.processed.values
     # merge into single variable, separated by whitespaces
@@ -44,7 +44,6 @@ def data_processing(data):
         [word2int[word] for word in review.split()] for review in tqdm(reviews)
     ]
 
-    seq_length = 256
     features = pad_features(
         reviews_enc, pad_id=word2int["<PAD>"], seq_length=seq_length
     )
@@ -56,50 +55,26 @@ def data_processing(data):
     labels = data.label.to_numpy()
 
     # train test split
-    train_size = 0.7  # we will use 80% of whole data as train set
-    val_size = 0.5  # and we will use 50% of test set as validation set
+    assert 0 < test_size < 1
+    train_size = 1 - test_size
 
     # make train set
     split_id = int(len(features) * train_size)
-    train_x, remain_x = features[:split_id], features[split_id:]
-    train_y, remain_y = labels[:split_id], labels[split_id:]
-
-    # make val and test set
-    split_val_id = int(len(remain_x) * val_size)
-    val_x, test_x = remain_x[:split_val_id], remain_x[split_val_id:]
-    val_y, test_y = remain_y[:split_val_id], remain_y[split_val_id:]
+    train_x, test_x = features[:split_id], features[split_id:]
+    train_y, test_y = labels[:split_id], labels[split_id:]
 
     # print out the shape
     print("Feature Shapes:")
     print("===============")
     print("Train set: {}".format(train_x.shape))
-    print("Validation set: {}".format(val_x.shape))
     print("Test set: {}".format(test_x.shape))
 
-    # define batch size
-    batch_size = 128
-
     # create tensor datasets
-    trainset = TensorDataset(torch.from_numpy(train_x), torch.from_numpy(train_y))
-    validset = TensorDataset(torch.from_numpy(val_x), torch.from_numpy(val_y))
-    testset = TensorDataset(torch.from_numpy(test_x), torch.from_numpy(test_y))
+    train_set = TensorDataset(torch.from_numpy(train_x), torch.from_numpy(train_y))
+    test_set = TensorDataset(torch.from_numpy(test_x), torch.from_numpy(test_y))
 
     # create dataloaders
-    trainloader = DataLoader(trainset, shuffle=True, batch_size=batch_size)
-    valloader = DataLoader(validset, shuffle=True, batch_size=batch_size)
-    testloader = DataLoader(testset, shuffle=True, batch_size=batch_size)
+    train_loader = DataLoader(train_set, shuffle=True, batch_size=batch_size)
+    test_loader = DataLoader(test_set, shuffle=True, batch_size=batch_size)
 
-    # check our batches
-    dataiter = iter(trainloader)
-    xtrain, ytrain = next(dataiter)
-    print(xtrain.shape, ytrain.shape)
-
-    dataiterv = iter(valloader)
-    xval, yval = next(dataiterv)
-    print(xval.shape, yval.shape)
-
-    dataitert = iter(testloader)
-    xtest, ytest = next(dataitert)
-    print(xtest.shape, ytest.shape)
-
-    return dataiter, dataiterv, dataitert, len(word2int)
+    return train_loader, test_loader, len(word2int)

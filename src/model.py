@@ -1,5 +1,3 @@
-import torch
-
 from utilities import PositionalEncoding, PositionwiseFeedForward, Embeddings
 import torch.nn as nn
 import copy
@@ -7,7 +5,9 @@ from attention import MultiHeadedAttention
 from encoder import Encoder, EncoderLayer
 
 
-def make_model(src_vocab, N=6, d_model=512, d_ff=2048, h=8, dropout=0.1):
+def make_model(
+    src_vocab, N=6, d_model=512, d_ff=2048, h=8, dropout=0.1, seq_length=128
+):
     "Helper: Construct a model from hyperparameters."
     c = copy.deepcopy
     attn = MultiHeadedAttention(h, d_model)
@@ -15,7 +15,7 @@ def make_model(src_vocab, N=6, d_model=512, d_ff=2048, h=8, dropout=0.1):
     position = PositionalEncoding(d_model, dropout)
     model = AttentionClassifier(
         Encoder(EncoderLayer(d_model, c(attn), c(ff), dropout), N),
-        ClassificationHead(),
+        ClassificationHead(d_model, seq_length),
         nn.Sequential(Embeddings(d_model, src_vocab), c(position)),
     )
 
@@ -51,16 +51,14 @@ class ClassificationHead(nn.Module):
     Classification head.
     """
 
-    def __init__(self):
+    def __init__(self, d_model, seq_length):
         super(ClassificationHead, self).__init__()
         self.flatten = nn.Flatten()
-
-        # TODO: 16384 = seq_length * embedding_size
-        self.linear = nn.Linear(16384, 1)
-        self.softmax = nn.Softmax()
+        self.linear1 = nn.Linear(d_model * seq_length, 128)
+        self.linear2 = nn.Linear(128, 2)
 
     def forward(self, x):
         x = self.flatten(x)
-        x = self.linear(x)
-        x = self.softmax(x)
-        return torch.squeeze(x)
+        x = self.linear1(x).relu()
+        x = self.linear2(x)
+        return x
