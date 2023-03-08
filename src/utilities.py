@@ -101,6 +101,8 @@ def load_params():
     epochs = config["training"]["epochs"]
     SAVE_PATH = config["paths"]["weights"]
     device = config["training"]["device"]
+    new_input = config["testing"]["new_input"]
+    label = config["testing"]["label"]
 
     return (
         data_path,
@@ -115,4 +117,6 @@ def load_params():
         epochs,
         SAVE_PATH,
         device,
+        new_input,
+        label,
     )
