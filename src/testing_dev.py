@@ -52,7 +52,6 @@ def test(model):
     pred = y_pred.data[0]
     print(pred)
     st.markdown(f"**Predicted label**: {pred}")
-    st.markdown(f"**True label**: {label}")
 
 
 if __name__ == "__main__":
