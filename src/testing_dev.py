@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import pandas as pd
-from data_preparation import data_processing
+from processing_fct import data_processing
 from tqdm import tqdm
 from utilities import set_device, load_params
 import streamlit as st
@@ -22,24 +22,21 @@ def test(model):
         _,
         _,
         device_name,
-        _,
-        _,
+        new_input,
+        label,
     ) = load_params()
 
     # set device
     device = set_device(device_name)
-
     data = pd.read_csv(data_path)
     data = data.sample(frac=amount_of_data, random_state=42)
-    _, test_loader, _ = data_processing(
-        data, batch_size=batch_size, seq_length=seq_length, test_size=0.2
+    test_loader, _ = data_processing(
+        data,new_input, label, seq_length=seq_length
     )
 
     # create test loop
     model.eval()
 
-    correct = 0
-    total = 0
     # since we're not training, we don't need to calculate the gradients for our outputs
     with torch.no_grad():
         for x, y in tqdm(test_loader):
@@ -51,13 +48,11 @@ def test(model):
             y_pred = nn.Softmax(dim=1)(y_pred)
             y_pred = torch.max(y_pred, dim=1)
             y_pred = y_pred.indices
-
-            total += y.size(0)
-            correct += torch.where(y_pred == y, 1, 0).sum().item()
-
-    accuracy = round(100 * correct / total, 3)
-    print(f"Accuracy of the network on test set: {accuracy} %")
-    st.markdown(f"**Accuracy of the network on test set**: {accuracy} %")
+    
+    pred = y_pred.data[0]
+    print(pred)
+    st.markdown(f"**Predicted label**: {pred}")
+    st.markdown(f"**True label**: {label}")
 
 
 if __name__ == "__main__":

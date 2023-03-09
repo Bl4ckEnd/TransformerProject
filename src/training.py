@@ -26,6 +26,8 @@ def train():
         epochs,
         SAVE_PATH,
         device_name,
+        _,
+        _,
     ) = load_params()
 
     # set device

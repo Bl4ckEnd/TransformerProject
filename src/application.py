@@ -23,6 +23,13 @@ if "training_finished" not in st.session_state:
 if "testing_finished" not in st.session_state:
     st.session_state.testing_finished = False
 
+if "review" not in st.session_state: 
+    st.session_state.review = False
+
+if "test_finished" not in st.session_state: 
+    st.session_state.test_finished = False
+
+
 st.markdown("*Hint: larger parameters lead to longer training times.*")
 
 if st.button("Confirm parameters"):
@@ -43,20 +50,22 @@ if st.button("Confirm parameters"):
 
     st.session_state.confirmed = True
 
+
 if st.session_state.confirmed:
     st.write("Parameters confirmed")
     st.markdown("*Hint 1: On Mac M1 chips, first training loss might be infinite.*")
     st.markdown("*Hint 2: If training loss doesn't improve, the model is stuck. Try to change parameters and re-run.*")
-    st.markdown("**Step 2**: Start training.")
+    st.markdown("**Step 2**: Start training by pressing the button 'Start training'.")
 
-if st.button("Start training") and st.session_state.confirmed:
-    # start training
-    from training import train
+if st.session_state.confirmed:
+    if st.button("Start training"): 
+        # start training
+        from training import train
 
-    st.write("Training started")
-    st.session_state.model = train()
-    st.write("Training finished")
-    st.session_state.training_finished = True
+        st.write("Training started")
+        st.session_state.model = train()
+        st.write("Training finished")
+        st.session_state.training_finished = True
 
 
 if st.session_state.training_finished:
@@ -71,3 +80,40 @@ if st.session_state.training_finished:
 
 if st.session_state.testing_finished:
     st.write("Session finished.")
+    st.session_state.testing_finished = True
+    
+
+if st.session_state.testing_finished:
+    st.markdown("**Step 5**: Write your own review")
+    new_input = st.text_input('Write your own movie review in english (no brackets needed)')
+    st.write('Your movie review is: ', new_input)
+    
+    label = st.radio(
+    "If your review is positive put 1, if negative put 0",(1, 0))
+    st.write('Your input label is', label)
+
+    if st.button("Confirm review"):
+        st.session_state.review = True
+        with open("params.yaml") as f:
+            config = yaml.load(f, Loader=yaml.FullLoader)
+            
+        config["testing"]["new_input"] = new_input
+        config["testing"]["label"] = label
+        
+        with open("params.yaml", "w") as f:
+            yaml.dump(config, f)
+
+if st.session_state.review: 
+    st.markdown("**Step 6**: Test your own review")
+    if st.button("Start your test"):
+        from testing_dev import test
+        st.write("Test started")
+        test(st.session_state.model)
+        st.write("The end")
+        st.session_state.test_finished = True
+        
+    #if st.session_state.test_finished:
+        #st.write("The end.")
+        #st.session_state.test_finished = True
+
+    

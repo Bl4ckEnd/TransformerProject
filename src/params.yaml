@@ -8,8 +8,11 @@ model:
 paths:
   data: ../online_dataset/imdb_processed.csv
   weights: ../saved_models/
+testing:
+  label: 1
+  new_input: This movie was really good.
 training:
-  amount_of_data: 0.1
+  amount_of_data: 0.7
   device: mps
-  epochs: 2
+  epochs: 3
   learning_rate: 0.001
