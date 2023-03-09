@@ -50,20 +50,22 @@ if st.button("Confirm parameters"):
 
     st.session_state.confirmed = True
 
+
 if st.session_state.confirmed:
     st.write("Parameters confirmed")
     st.markdown("*Hint 1: On Mac M1 chips, first training loss might be infinite.*")
     st.markdown("*Hint 2: If training loss doesn't improve, the model is stuck. Try to change parameters and re-run.*")
     st.markdown("**Step 2**: Start training by pressing the button 'Start training'.")
 
-if st.button("Start training") and st.session_state.confirmed:
-    # start training
-    from training import train
+if st.session_state.confirmed:
+    if st.button("Start training"): 
+        # start training
+        from training import train
 
-    st.write("Training started")
-    st.session_state.model = train()
-    st.write("Training finished")
-    st.session_state.training_finished = True
+        st.write("Training started")
+        st.session_state.model = train()
+        st.write("Training finished")
+        st.session_state.training_finished = True
 
 
 if st.session_state.training_finished:
@@ -84,7 +86,7 @@ if st.session_state.testing_finished:
 if st.session_state.testing_finished:
     st.markdown("**Step 5**: Write your own review")
     new_input = st.text_input('Write your own movie review in english (no brackets needed)')
-    st.write('Your movie review: ', new_input)
+    st.write('Your movie review is: ', new_input)
     
     label = st.radio(
     "If your review is positive put 1, if negative put 0",(1, 0))
@@ -102,7 +104,7 @@ if st.session_state.testing_finished:
             yaml.dump(config, f)
 
 if st.session_state.review: 
-    st.markdown("**Step 4**: Test your own review")
+    st.markdown("**Step 6**: Test your own review")
     if st.button("Start your test"):
         from testing_dev import test
         st.write("Test started")
