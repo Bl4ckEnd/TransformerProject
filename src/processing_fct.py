@@ -24,11 +24,10 @@ def pad_features(reviews, pad_id, seq_length=128):
     return features
 
 
-def data_processing(data, new_input, label, seq_length=256):
+def data_processing(new_input, label, seq_length=256):
     # get all processed reviews
-    reviews = data.processed.values
     # merge into single variable, separated by whitespaces
-    words = " ".join(reviews)
+    words = " ".join(new_input)
     # obtain list of words
     words = words.split()
 
@@ -39,13 +38,9 @@ def data_processing(data, new_input, label, seq_length=256):
     int2word[0] = "<PAD>"
     word2int = {word: id for id, word in int2word.items()}
 
-    # process single input
-    new_input = " ".join(new_input)
-
-
     # encode words
     input_enc = [
-        [word2int[word] for word in new_input.split()] for new_input in tqdm(new_input)
+        [word2int[word] for word in review.split()] for review in tqdm(new_input)
     ]
 
     features_dev = pad_features(
@@ -60,7 +55,7 @@ def data_processing(data, new_input, label, seq_length=256):
     test_x = features_dev
     #Create tendor Datasets
     test_set = TensorDataset(torch.tensor([test_x]), torch.tensor([label]))
-    return test_set, len(word2int_dev)
+    return test_set, len(word2int)
 
 
 
