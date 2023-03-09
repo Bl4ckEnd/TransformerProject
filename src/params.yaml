@@ -10,9 +10,9 @@ paths:
   weights: ../saved_models/
 testing:
   label: 1
-  new_input: This movie was really good.
+  new_input: bad movie
 training:
-  amount_of_data: 0.7
+  amount_of_data: 0.8
   device: mps
-  epochs: 3
+  epochs: 5
   learning_rate: 0.001

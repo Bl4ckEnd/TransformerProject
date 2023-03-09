@@ -31,7 +31,7 @@ def test(model):
     data = pd.read_csv(data_path)
     data = data.sample(frac=amount_of_data, random_state=42)
     test_loader, _ = data_processing(
-        data,new_input, label, seq_length=seq_length
+        new_input, label, seq_length=seq_length
     )
 
     # create test loop
