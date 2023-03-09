@@ -5,6 +5,10 @@ from layers import clones
 
 
 class MultiHeadedAttention(nn.Module):
+    """
+    Take in model size and number of heads.
+    """
+
     def __init__(self, h, d_model, dropout=0.1):
         "Take in model size and number of heads."
         super(MultiHeadedAttention, self).__init__()

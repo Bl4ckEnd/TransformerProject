@@ -1,12 +1,16 @@
 import streamlit as st
 import yaml
 
+
 # let user decide in streamlit application which parameters to use for training
 st.title("Methods in Artificial Intelligence - Transformer Project")
-st.markdown("""In this streamlit application you can train a transformer model to classify
+st.markdown(
+    """In this streamlit application you can train a transformer model to classify
 movie reviews into positive or negative. Notice that inside the parameters, you can find
 'Number of Samples'. This refers to the size of the whole dataset that will be afterwards
-split into train (80%) and test (20%).""")
+split into train (80%) and test (20%)."""
+)
+
 st.markdown("**Step 1**: Choose hyperparameters and press 'Confirm parameters'.")
 h = st.slider("h (Number of Attention-Heads)", 1, 8, 2)
 N = st.slider("N (Number of Attention-Layers)", 1, 6, 2)
@@ -23,10 +27,10 @@ if "training_finished" not in st.session_state:
 if "testing_finished" not in st.session_state:
     st.session_state.testing_finished = False
 
-if "review" not in st.session_state: 
+if "review" not in st.session_state:
     st.session_state.review = False
 
-if "test_finished" not in st.session_state: 
+if "test_finished" not in st.session_state:
     st.session_state.test_finished = False
 
 
@@ -54,11 +58,13 @@ if st.button("Confirm parameters"):
 if st.session_state.confirmed:
     st.write("Parameters confirmed")
     st.markdown("*Hint 1: On Mac M1 chips, first training loss might be infinite.*")
-    st.markdown("*Hint 2: If training loss doesn't improve, the model is stuck. Try to change parameters and re-run.*")
+    st.markdown(
+        "*Hint 2: If training loss doesn't improve, the model is stuck. Try to change parameters and re-run.*"
+    )
     st.markdown("**Step 2**: Start training by pressing the button 'Start training'.")
 
 if st.session_state.confirmed:
-    if st.button("Start training"): 
+    if st.button("Start training"):
         # start training
         from training import train
 
@@ -81,39 +87,43 @@ if st.session_state.training_finished:
 if st.session_state.testing_finished:
     st.write("Session finished.")
     st.session_state.testing_finished = True
-    
+
 
 if st.session_state.testing_finished:
     st.markdown("**Step 5**: Write your own review")
-    new_input = st.text_input('Write your own movie review in english (no brackets needed)')
-    st.write('Your movie review is: ', new_input)
-    
-    label = st.radio(
-    "If your review is positive put 1, if negative put 0",(1, 0))
-    st.write('Your input label is', label)
+    new_input = st.text_input(
+        "Write your own movie review in english (no brackets needed)"
+    )
+    st.write("Your movie review is: ", new_input)
+
+    label = st.radio("If your review is positive put 1, if negative put 0", (1, 0))
+    st.write("Your input label is", label)
 
     if st.button("Confirm review"):
         st.session_state.review = True
         with open("params.yaml") as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
-            
+
         config["testing"]["new_input"] = new_input
         config["testing"]["label"] = label
-        
+
         with open("params.yaml", "w") as f:
             yaml.dump(config, f)
 
-if st.session_state.review: 
+if st.session_state.review:
     st.markdown("**Step 6**: Test your own review")
     if st.button("Start your test"):
         from testing_dev import test
+
         st.write("Test started")
         test(st.session_state.model)
         st.write("The end")
         st.session_state.test_finished = True
-        
-    #if st.session_state.test_finished:
-        #st.write("The end.")
-        #st.session_state.test_finished = True
 
-    
+
+def main():
+    pass
+
+
+if __name__ == "__main__":
+    main()

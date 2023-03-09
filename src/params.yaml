@@ -12,7 +12,7 @@ testing:
   label: 1
   new_input: This movie was really good.
 training:
-  amount_of_data: 0.7
+  amount_of_data: 0.2
   device: mps
-  epochs: 3
+  epochs: 5
   learning_rate: 0.001
