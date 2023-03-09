@@ -6,7 +6,9 @@ from layers import clones
 
 class MultiHeadedAttention(nn.Module):
     """
-    Take in model size and number of heads.
+    MultiHead attention module from "Attention is all you need". This module creates h attention heads.
+    Each attention head has its own parameters. The output of each attention head is concatenated and
+    linearly transformed to the output size.
     """
 
     def __init__(self, h, d_model, dropout=0.1):
@@ -21,7 +23,9 @@ class MultiHeadedAttention(nn.Module):
         self.dropout = nn.Dropout(p=dropout)
 
     def forward(self, query, key, value, mask=None):
-        "Implements Figure 2"
+        """
+        Forward pass of the multi-headed attention module.
+        """
         if mask is not None:
             # Same mask applied to all h heads.
             mask = mask.unsqueeze(1)
@@ -45,7 +49,9 @@ class MultiHeadedAttention(nn.Module):
 
 
 def attention(query, key, value, mask=None, dropout=None):
-    "Compute 'Scaled Dot Product Attention'"
+    """
+    Compute 'Scaled Dot Product Attention'.
+    """
     d_k = query.size(-1)
     scores = torch.matmul(query, key.transpose(-2, -1)) / math.sqrt(d_k)
     if mask is not None:

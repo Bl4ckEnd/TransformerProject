@@ -14,6 +14,9 @@ tqdm.pandas()
 
 
 def pad_features(reviews, pad_id, seq_length=128):
+    """
+    Function that pads features to a given length.
+    """
     # features = np.zeros((len(reviews), seq_length), dtype=int)
     features = np.full((len(reviews), seq_length), pad_id, dtype=int)
 
@@ -25,6 +28,9 @@ def pad_features(reviews, pad_id, seq_length=128):
 
 
 def data_processing(data, batch_size=128, seq_length=256, test_size=0.2):
+    """
+    Function that processes the data and returns the train and test dataloaders, as well as the vocabulary size.
+    """
     # get all processed reviews
     reviews = data.processed.values
     # merge into single variable, separated by whitespaces

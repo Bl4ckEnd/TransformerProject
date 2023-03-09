@@ -8,6 +8,9 @@ import streamlit as st
 
 
 def test(model):
+    """
+    Function that runs the test loop for a given model, modified for the new input.
+    """
     # Load params
     (
         data_path,
@@ -30,9 +33,7 @@ def test(model):
     device = set_device(device_name)
     data = pd.read_csv(data_path)
     data = data.sample(frac=amount_of_data, random_state=42)
-    test_loader, _ = data_processing(
-        new_input, label, seq_length=seq_length
-    )
+    test_loader, _ = data_processing(new_input, label, seq_length=seq_length)
 
     # create test loop
     model.eval()
@@ -48,7 +49,7 @@ def test(model):
             y_pred = nn.Softmax(dim=1)(y_pred)
             y_pred = torch.max(y_pred, dim=1)
             y_pred = y_pred.indices
-    
+
     pred = y_pred.data[0]
     print(pred)
     st.markdown(f"**Predicted label**: {pred}")

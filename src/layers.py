@@ -4,7 +4,7 @@ import copy
 
 
 class LayerNorm(nn.Module):
-    "Construct a layernorm module (See citation for details)."
+    """Construct a layernorm module (See citation for details)."""
 
     def __init__(self, features, eps=1e-6):
         super(LayerNorm, self).__init__()
@@ -30,10 +30,10 @@ class SublayerConnection(nn.Module):
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, x, sublayer):
-        "Apply residual connection to any sublayer with the same size."
+        """Apply residual connection to any sublayer with the same size."""
         return x + self.dropout(sublayer(self.norm(x)))
 
 
 def clones(module, N):
-    "Produce N identical layers."
+    """Produce N identical layers."""
     return nn.ModuleList([copy.deepcopy(module) for _ in range(N)])

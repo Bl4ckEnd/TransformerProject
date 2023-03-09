@@ -8,7 +8,7 @@ from encoder import Encoder, EncoderLayer
 def make_model(
     src_vocab, N=6, d_model=512, d_ff=2048, h=8, dropout=0.1, seq_length=128
 ):
-    "Helper: Construct a model from hyperparameters."
+    """Helper: Construct a model from hyperparameters."""
     c = copy.deepcopy
     attn = MultiHeadedAttention(h, d_model)
     ff = PositionwiseFeedForward(d_model, d_ff, dropout)
@@ -48,7 +48,8 @@ class AttentionClassifier(nn.Module):
 
 class ClassificationHead(nn.Module):
     """
-    Classification head.
+    Classification head. This module takes the output of the encoder and
+    performs a classification task.
     """
 
     def __init__(self, d_model, seq_length):

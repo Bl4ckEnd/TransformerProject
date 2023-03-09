@@ -8,6 +8,10 @@ import streamlit as st
 
 
 def test(model):
+    """
+    Function that runs the test loop for a given model.
+    """
+
     # Load params
     (
         data_path,

@@ -5,14 +5,14 @@ import yaml
 
 
 def subsequent_mask(size):
-    "Mask out subsequent positions."
+    """Mask out subsequent positions."""
     attn_shape = (1, size, size)
     subsequent_mask = torch.triu(torch.ones(attn_shape), diagonal=1).type(torch.uint8)
     return subsequent_mask == 0
 
 
 class PositionwiseFeedForward(nn.Module):
-    "Implements FFN equation."
+    """Implements FFN equation."""
 
     def __init__(self, d_model, d_ff, dropout=0.1):
         super(PositionwiseFeedForward, self).__init__()
@@ -28,6 +28,11 @@ class PositionwiseFeedForward(nn.Module):
 
 
 class Embeddings(nn.Module):
+    """
+    Class to generate word embeddings. This module takes a word index and
+    returns the corresponding word embedding.
+    """
+
     def __init__(self, d_model, vocab):
         super(Embeddings, self).__init__()
         self.lut = nn.Embedding(vocab, d_model)
@@ -40,7 +45,7 @@ class Embeddings(nn.Module):
 
 
 class PositionalEncoding(nn.Module):
-    "Implement the PE function."
+    """Implement the PE function."""
 
     def __init__(self, d_model, dropout, max_len=5000):
         super(PositionalEncoding, self).__init__()
@@ -63,6 +68,10 @@ class PositionalEncoding(nn.Module):
 
 
 def set_device(name="cpu"):
+    """
+    Set the device to use for training. This function will try to use the
+    specified device, but will fall back to CPU if the device is unavailable.
+    """
     if name == "cpu":
         return torch.device("cpu")
     elif name == "gpu":
@@ -86,6 +95,26 @@ def set_device(name="cpu"):
 
 
 def load_params():
+    """
+    Load the parameters from the params.yaml file.
+
+    Returns:
+        data_path (str): Path to the data
+        batch_size (int): Batch size
+        seq_length (int): Sequence length
+        N (int): Number of encoder/decoder blocks
+        d_model (int): Dimension of the model
+        d_ff (int): Dimension of the feed forward network
+        h (int): Number of heads
+        amount_of_data (int): Amount of data to use for training
+        learning_rate (float): Learning rate
+        epochs (int): Number of epochs
+        SAVE_PATH (str): Path to save the weights
+        device (str): Device to use for training
+        new_input (str): New input to test the model on
+        label (str): Label of the new input
+    """
+
     with open("params.yaml") as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
 

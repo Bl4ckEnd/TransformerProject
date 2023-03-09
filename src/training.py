@@ -12,6 +12,10 @@ import streamlit as st
 
 
 def train():
+    """
+    Function that runs the training loop for the model.
+    """
+
     # Load params
     (
         data_path,
