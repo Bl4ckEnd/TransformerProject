@@ -31,7 +31,7 @@ def test(model):
     data = pd.read_csv(data_path)
     data = data.sample(frac=amount_of_data, random_state=42)
     test_loader, _ = data_processing(
-        data,new_input, label, seq_length=seq_length
+        new_input, label, seq_length=seq_length
     )
 
     # create test loop
@@ -52,7 +52,6 @@ def test(model):
     pred = y_pred.data[0]
     print(pred)
     st.markdown(f"**Predicted label**: {pred}")
-    st.markdown(f"**True label**: {label}")
 
 
 if __name__ == "__main__":
