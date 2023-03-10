@@ -9,8 +9,8 @@ paths:
   data: ../online_dataset/imdb_processed.csv
   weights: ../saved_models/
 testing:
-  label: 1
-  new_input: This movie was really good.
+  label: 0
+  new_input: this is a bad movie.
 training:
   amount_of_data: 0.2
   device: mps
