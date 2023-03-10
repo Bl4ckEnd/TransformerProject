@@ -8,6 +8,7 @@ data
 saved_models/
 results
 .idea/
+.DS_Store
 
 #### streamlit script
 ########################################################################
