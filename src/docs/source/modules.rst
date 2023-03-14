@@ -1,7 +1,7 @@
-src
+src package
 ===
 
 .. toctree::
    :maxdepth: 4
 
-   src
+   src package
